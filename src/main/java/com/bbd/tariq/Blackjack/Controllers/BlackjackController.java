@@ -6,6 +6,9 @@ import com.bbd.tariq.Blackjack.DTOS.PostNewGameDto;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.DrawCardResponseModel;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.DrawCardFromPileResponseModel;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.GoFish.GoFishPilesModel;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.GoFish.GoFishPilesResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 import com.bbd.tariq.Blackjack.Models.GameModel;
 import org.modelmapper.ModelMapper;
@@ -58,8 +61,7 @@ public class BlackjackController extends BaseController {
     @GetMapping(value="/test")
     public PilesBaseResponseModel getPiles(@RequestParam String deckId, String cardId) {
 
-        var x = _cardsApi.addCardsToPile(deckId, Constants.PileTypes.GO_FISH,Constants.GoFishPileNames.PLAYER_1_PILE_NAME,cardId);
-
+        PilesBaseResponseModel x = _cardsApi.addCardsToPile(deckId, Constants.PileTypes.SOLITAIRE,Constants.SolitairePileNames.SPADES_PILE_NAME,cardId);
         return x;
     }
 
@@ -72,4 +74,9 @@ public class BlackjackController extends BaseController {
         return x;
     }
 
+    @GetMapping(value="/addToPile")
+    public DrawCardFromPileResponseModel drawCardFromPile(String deckId) {
+        var x = _cardsApi.drawFromPile(deckId,Constants.PileTypes.SOLITAIRE, Constants.SolitairePileNames.SPADES_PILE_NAME,1);
+        return x;
+    }
 }

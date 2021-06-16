@@ -1,6 +1,7 @@
 package com.bbd.tariq.Blackjack.Interfaces;
 
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.*;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.DrawCardFromPileResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ public interface ICardsApi {
     public PilesBaseResponseModel addCardsToPile(String deckId, String pileType ,String pileName, String cards);
     public PilesBaseResponseModel shufflePile(String deckId, String pileType, String PileName);
     public PilesBaseResponseModel listCardsInPile(String deckId, String pileType, String pileName);
+    public DrawCardFromPileResponseModel drawFromPile(String deckId, String pileType, String pileName, String cards);
+    public DrawCardFromPileResponseModel drawFromPile(String deckId, String pileType, String pileName, int cardCount);
 
 
 

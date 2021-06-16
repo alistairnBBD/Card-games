@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan("com.bbd.tariq.blackjack")
 public class Config {
 
-    private final IPileFactory _pileFactory = new PileFactoryStrategy();
+    private static final IPileFactory _pileFactory = new PileFactoryStrategy();
 
     //"Register" the Interface and Concrete class
     @Bean

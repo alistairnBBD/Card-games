@@ -3,6 +3,8 @@ package com.bbd.tariq.Blackjack.Strategies;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
 import com.bbd.tariq.Blackjack.Interfaces.IPileFactory;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.DrawCardResponseModel;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.DrawCardFromPileResponseModel;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.GoFish.GoFishPilesResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.ShuffleCardsResponseModel;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -88,6 +90,7 @@ public class CardsApiStrategy implements ICardsApi {
         }
     }
 
+    //TODO, Do we even use this?
     @Override
     public ShuffleCardsResponseModel getPartialDeck(PriorityQueue<String> cards) {
         return null;
@@ -103,8 +106,8 @@ public class CardsApiStrategy implements ICardsApi {
 
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            var pileModel = _pileFactory.getPile(pileType);
-            var addToPileResponseModel = _mapper.readValue(response.body(),pileModel.getClass());
+            PilesBaseResponseModel pileModel = _pileFactory.getPile(pileType);
+            PilesBaseResponseModel addToPileResponseModel = _mapper.readValue(response.body(),pileModel.getClass());
             addToPileResponseModel.type = pileModel.type;
             return addToPileResponseModel;
         }
@@ -116,9 +119,26 @@ public class CardsApiStrategy implements ICardsApi {
         }
     }
 
+    //TODO
     @Override
     public PilesBaseResponseModel shufflePile(String deckId, String pileType, String PileName) {
-        return null;
+        var request = HttpRequest.newBuilder(
+                URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/shuffle/",deckId, PileName)))
+                .header("accept","application/json")
+                .build();
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            var pileModel = _pileFactory.getPile(pileType);
+            var addToPileResponseModel = _mapper.readValue(response.body(),pileModel.getClass());
+            return addToPileResponseModel;
+        }
+        catch(Exception ex)
+        {
+            //Need to implement some sort of logging interface
+            System.out.println(ex);
+            return null;
+        }
     }
 
     @Override
@@ -133,6 +153,46 @@ public class CardsApiStrategy implements ICardsApi {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             var pileModel = _pileFactory.getPile(pileType);
             var addToPileResponseModel = _mapper.readValue(response.body(),pileModel.getClass());
+            return addToPileResponseModel;
+        }
+        catch(Exception ex)
+        {
+            //Need to implement some sort of logging interface
+            System.out.println(ex);
+            return null;
+        }
+    }
+
+    @Override
+    public DrawCardFromPileResponseModel drawFromPile(String deckId, String pileType, String pileName, String cards) {
+        var request = HttpRequest.newBuilder(
+                URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/draw/?cards=%s",deckId,pileName,cards)))
+                .header("accept","application/json")
+                .build();
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            var addToPileResponseModel = _mapper.readValue(response.body(),DrawCardFromPileResponseModel.class);
+            return addToPileResponseModel;
+        }
+        catch(Exception ex)
+        {
+            //Need to implement some sort of logging interface
+            System.out.println(ex);
+            return null;
+        }
+    }
+
+    @Override
+    public DrawCardFromPileResponseModel drawFromPile(String deckId, String pileType, String pileName, int cardCount) {
+        var request = HttpRequest.newBuilder(
+                URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/draw/?count=%s",deckId,pileName,cardCount)))
+                .header("accept","application/json")
+                .build();
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            var addToPileResponseModel = _mapper.readValue(response.body(),DrawCardFromPileResponseModel.class);
             return addToPileResponseModel;
         }
         catch(Exception ex)
