@@ -1,18 +1,16 @@
-package com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles;
+package com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Solitaire;
 
-import com.bbd.tariq.Blackjack.Common.Constants;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
 
 @Getter @Setter
 public class SolitairePilesResponseModel extends PilesBaseResponseModel {
 
 
     @JsonProperty("piles")
-    public Piles piles;
+    public SolitairePilesModel solitairePiles;
 
 
 

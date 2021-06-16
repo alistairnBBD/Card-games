@@ -4,7 +4,7 @@ import com.bbd.tariq.Blackjack.Common.Constants;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PileInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SolitairePiles {
+public class SolitairePilesModel {
 
     @JsonProperty(Constants.SolitairePileNames.DIAMONDS_PILE_NAME)
     public PileInfo diamondsPile;
