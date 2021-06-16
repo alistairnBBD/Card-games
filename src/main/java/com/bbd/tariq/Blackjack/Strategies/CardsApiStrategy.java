@@ -104,7 +104,6 @@ public class CardsApiStrategy implements ICardsApi {
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             var pileModel = _pileFactory.getPile(pileType);
-            var f = pileModel.getClass();
             var addToPileResponseModel = _mapper.readValue(response.body(),pileModel.getClass());
             addToPileResponseModel.type = pileModel.type;
             return addToPileResponseModel;
