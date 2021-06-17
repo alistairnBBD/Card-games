@@ -1,8 +1,10 @@
 package com.bbd.tariq.Blackjack;
 
+import com.bbd.tariq.Blackjack.Interfaces.IBlackjackService;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
 import com.bbd.tariq.Blackjack.Interfaces.IPileFactory;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
+import com.bbd.tariq.Blackjack.Strategies.BlackjackServiceStrategy;
 import com.bbd.tariq.Blackjack.Strategies.CardsApiStrategy;
 import com.bbd.tariq.Blackjack.Strategies.PileFactoryStrategy;
 import com.bbd.tariq.Blackjack.Strategies.RepoFactoryStrategy;
@@ -36,6 +38,9 @@ public class Config {
 
     @Bean
     public IPileFactory pileFactory() {return _pileFactory;}
+
+    @Bean
+    public IBlackjackService blackjackService() { return new BlackjackServiceStrategy(cardsApi(),repoFactory());}
 
 
 }

@@ -1,2 +1,7 @@
-package com.bbd.tariq.Blackjack.Models.BlackjackGame;public class BlackjackPilesModel {
+package com.bbd.tariq.Blackjack.Models.BlackjackGame;
+
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
+
+public class BlackjackPilesResponseModel extends PilesBaseResponseModel {
+
 }

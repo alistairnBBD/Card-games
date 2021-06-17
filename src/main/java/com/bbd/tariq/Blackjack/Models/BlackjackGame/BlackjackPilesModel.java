@@ -1,2 +1,4 @@
-package com.bbd.tariq.Blackjack.Models.BlackjackGame;public class BlackjackPilesModel {
+package com.bbd.tariq.Blackjack.Models.BlackjackGame;
+
+public class BlackjackPilesModel {
 }

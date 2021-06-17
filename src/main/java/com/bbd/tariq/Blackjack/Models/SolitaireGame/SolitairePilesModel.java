@@ -1,4 +1,4 @@
-package com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Solitaire;
+package com.bbd.tariq.Blackjack.Models.SolitaireGame;
 
 import com.bbd.tariq.Blackjack.Common.Constants;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PileInfo;

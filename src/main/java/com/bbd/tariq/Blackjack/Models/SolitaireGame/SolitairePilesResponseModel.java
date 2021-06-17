@@ -1,4 +1,4 @@
-package com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Solitaire;
+package com.bbd.tariq.Blackjack.Models.SolitaireGame;
 
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 import com.fasterxml.jackson.annotation.JsonProperty;
