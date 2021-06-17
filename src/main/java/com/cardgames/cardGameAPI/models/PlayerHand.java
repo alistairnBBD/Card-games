@@ -3,15 +3,15 @@ package com.cardgames.cardGameAPI.models;
 import lombok.Data;
 
 @Data
-public class Player {
+public class PlayerHand {
     private String _name;
     private String _deckID;
-    private String message;
+    private String[] hand;
 
-    public Player(String name, String deckID, String message) {
+    public PlayerHand(String name, String deckID, String[] hand) {
         _name = name;
         _deckID = deckID;
-        this.message = message;
+        this.hand = hand;
     }
 
     public String getName() {
@@ -22,7 +22,7 @@ public class Player {
         return _deckID;
     }
 
-    public String getMessage() {
-        return message;
+    public String[] getHand() {
+        return hand;
     }
 }

@@ -14,4 +14,9 @@ public class DeckCreationResponse {
         this.status = status;
         this.deckID = deckID;
     }
+
+    public String getDeckID() {
+        System.out.println(deckID);
+        return deckID;
+    }
 }
