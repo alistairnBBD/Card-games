@@ -132,26 +132,9 @@ public class BlackjackServiceStrategy implements IBlackjackService {
     @Override
     public BlackjackGameModel stand(String gameId, int playerId) {
         var blackjackGameModel = (BlackjackGameModel) _blackjackRepo.Get(gameId);
-        if(blackjackGameModel == null) {
-            System.out.println("ERROR: Failed to find game!");
-            return null;
-        }
-
         var player = blackjackGameModel.players.stream().filter(p ->p.playerId == playerId).findFirst().orElse(null);
-        if(player==null) {
-            System.out.println("ERROR: Failed to find player!");
-            return null;
-        }
 
-        if(player.playerId != blackjackGameModel.turn) {
-            System.out.println(String.format("ERROR: Not Player %s turn, Current Players turn: %s",playerId,blackjackGameModel.turn));
-            return null;
-        }
-        if(player.blackjack) {
-            System.out.println(String.format("ERROR: Player %s has gotten Blackjack this round already!", player.playerId));
-            return null;
-
-        }
+        preliminaryChecks(blackjackGameModel,player,playerId);
 
         player.action = Constants.Blackjack.BlackJackActions.STAND;
         blackjackGameModel.turn++;
@@ -220,6 +203,10 @@ public class BlackjackServiceStrategy implements IBlackjackService {
             throw new BadRequestException(String.format("ERROR: Player %s has gotten Blackjack this round already!", player.playerId));
 
         }
+
+    }
+    //TODO
+    private void determineOutcome() {
 
     }
 }

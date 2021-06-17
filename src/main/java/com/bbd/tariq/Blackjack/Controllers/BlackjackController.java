@@ -46,6 +46,12 @@ public class BlackjackController extends BaseController {
         return _blackjackService.hit(gameId,playerId);
     }
 
+    @PostMapping(value = "/stand")
+    public BlackjackGameModel Stand(@RequestParam String gameId, int playerId) {
+
+        return _blackjackService.stand(gameId,playerId);
+    }
+
     //Solitaire
     @GetMapping(value="/test")
     public PilesBaseResponseModel getPiles(@RequestParam String deckId, String cardId) {
