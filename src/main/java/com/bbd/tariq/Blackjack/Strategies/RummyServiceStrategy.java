@@ -6,9 +6,13 @@ import com.bbd.tariq.Blackjack.Exceptions.BadRequestException;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Interfaces.IRummyService;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.CardModel;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.DrawCardResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 import com.bbd.tariq.Blackjack.Models.RummyGame.RummyGameModel;
+import com.bbd.tariq.Blackjack.Models.RummyGame.RummyPlayer;
 import com.bbd.tariq.Blackjack.Models.GameModel;
+import com.bbd.tariq.Blackjack.Models.PlayerModel;
 import com.bbd.tariq.Blackjack.Repos.Repo;
 import com.bbd.tariq.Blackjack.Repos.RummyRepo;
 
@@ -27,7 +31,7 @@ public class RummyServiceStrategy implements IRummyService {
         _rummyRepo = repoFactory.getRepo(Constants.Blackjack.REPO_NAME);
     }
 
-    public GameModel newGame(PostNewGameDto newGameDto) {
+    public RummyGameModel newGame(PostNewGameDto newGameDto) {
         /*
         * Logic:
         *   1. FE hits this endpoint and we create a new game
@@ -42,67 +46,89 @@ public class RummyServiceStrategy implements IRummyService {
         rummyModel.currentTurn = 0;
         rummyModel.pickedUp = false;
         rummyModel.playerCount = newGameDto.players.size();
+        rummyModel.gameState = Constants.GameStates.RUNNING;
         _rummyRepo.Insert(rummyModel);
         for(int i = 0; i < newGameDto.players.size(); i++)
         {
-            String cards = _cardsApi.drawCards(rummyModel.deckId, 7).getCards();
-            _cardsApi.addCardsToPile(rummyModel.deckId, "Rummy", "Player" + i, cards);
+            DrawCardResponseModel res = _cardsApi.drawCards(rummyModel.deckId, 7);
+            RummyPlayer player = new RummyPlayer();
+            player.playerId = newGameDto.players.get(i).playerId;
+            player.name = newGameDto.players.get(i).name;
+            player.score = 0;
+            player.cards = res.cards;
+            rummyModel.players.add(player);
+            _cardsApi.addCardsToPile(rummyModel.deckId, "Rummy", "Player" + i, res.getCards());
         }
-        _cardsApi.addCardsToPile(rummyModel.deckId, "Rummy", "discard", _cardsApi.drawCards(rummyModel.deckId, 1).getCards());
+        CardModel discard = _cardsApi.drawCards(rummyModel.deckId, 1).cards.get(0);
+        _cardsApi.addCardsToPile(rummyModel.deckId, "Rummy", "discard", discard.code);
+        rummyModel.discardCard = discard;
         return rummyModel;
     }
 
-    public PilesBaseResponseModel Pickup(String gameId, String playerId, Boolean fromDeck) {
+    public RummyGameModel Pickup(String gameId, int playerId, Boolean fromDeck) {
         checkTurn(gameId, playerId, true);
-        if(gameId.isEmpty()|| playerId.isEmpty()) {
+        RummyGameModel rgm = (RummyGameModel) _rummyRepo.Get(gameId);
+        if(gameId.isEmpty()|| playerId < 0) {
             //return some error code
             throw new BadRequestException(String.format("No Players"));
         }
 
         var game = _rummyRepo.Get(gameId);
-        String res;
+        DrawCardResponseModel res;
         if(fromDeck)
         {
-            res = _cardsApi.drawCards(game.deckId, 1).getCards(); //PickupService.pickupDeck(deckID, player);
+            res = _cardsApi.drawCards(game.deckId, 1);
+            if(res.cards == null)
+            {
+                rgm.gameState = Constants.GameStates.COMPLETE;
+                rgm.message = "Deck is empty, game is a draw";
+                return rgm;
+            }
         }
         else
         {
-            res = _cardsApi.drawDiscard(game.deckId).getCards();
+            res = _cardsApi.drawDiscard(game.deckId);
         }
         
-        var drawnCards = _cardsApi.addCardsToPile(game.deckId, "Rummy", playerId, res);
-        RummyGameModel rgm = (RummyGameModel) _rummyRepo.Get(gameId);
+        var drawnCards = _cardsApi.addCardsToPile(game.deckId, "Rummy", "Player" + playerId, res.getCards());
+        rgm.players.get(playerId).cards.add(res.cards.get(0));
+        
         rgm.pickedUp = true;
-        return drawnCards;
+        return rgm;
     }
 
-    public PilesBaseResponseModel Discard( String gameId, String playerId,  String cards) {
+    public RummyGameModel Discard( String gameId, int playerId,  String cards) {
         checkTurn(gameId, playerId, false);
-        if(gameId.isEmpty()|| playerId.isEmpty()) {
+        RummyGameModel rgm = (RummyGameModel) _rummyRepo.Get(gameId);
+        if(gameId.isEmpty()|| playerId<0) {
             //return some error code
             throw new BadRequestException(String.format("No Players"));
         }
 
         var game = _rummyRepo.Get(gameId);
-        String res;
+        DrawCardResponseModel res;
 
-        res = _cardsApi.discardCards(game.deckId, playerId, cards).getCards(); //PickupService.pickupDeck(deckID, player);
-        
-        var drawnCards = _cardsApi.addCardsToPile(game.deckId, "Rummy", "discard", res);
-        RummyGameModel rgm = (RummyGameModel) _rummyRepo.Get(gameId);
+        res = _cardsApi.discardCards(game.deckId, "Player" + playerId, cards); //PickupService.pickupDeck(deckID, player);
+        if(res.cards == null)
+            throw new BadRequestException(String.format("The card %d is not in Player %s's hand",cards,playerId));
+        var drawnCards = _cardsApi.addCardsToPile(game.deckId, "Rummy", "discard", res.getCards());
+        rgm.discardCard = res.cards.get(0);
+        rgm.players.get(playerId).cards.removeIf(n -> n.code.compareTo(cards) == 0);
         rgm.pickedUp = false;
         if(rgm.currentTurn == rgm.playerCount - 1)
             rgm.currentTurn = 0;
         else
             rgm.currentTurn = rgm.currentTurn + 1;
+            
 
-        if(checkComplete(gameId,playerId))
+        if(checkComplete(gameId,"Player"+playerId))
             drawnCards.win = true;
-        return drawnCards;
+        return rgm;
     }
 
-    public PilesBaseResponseModel MakeAddSet( String gameId, String playerId, String setId,  String cards,  Boolean make) {
+    public RummyGameModel MakeAddSet( String gameId, int playerId, String setId,  String cards,  Boolean make) {
         checkTurn(gameId, playerId, false);
+        RummyGameModel rgm = (RummyGameModel) _rummyRepo.Get(gameId);
         if(gameId.isEmpty()|| setId.isEmpty()) {
             //return some error code
             throw new BadRequestException(String.format("No Players"));
@@ -129,22 +155,25 @@ public class RummyServiceStrategy implements IRummyService {
 
             
         for(int i = 0; i < tempCards.size(); i++) {
-            char cval = tempCards.get(i).charAt(0);
-            switch (cval) {
-                case '0': val.add(10);
-                    break;
-                case 'J': val.add(11);
-                    break;
-                case 'Q': val.add(12);
-                    break;
-                case 'K': val.add(13);
-                    break;  
-                case 'A': val.add(14);
-                    break; 
-                default: val.add(Character.getNumericValue(cval));
-                    break;    
+            if(tempCards.get(i).length() > 0)
+            {
+                char cval = tempCards.get(i).charAt(0);
+                switch (cval) {
+                    case '0': val.add(10);
+                        break;
+                    case 'J': val.add(11);
+                        break;
+                    case 'Q': val.add(12);
+                        break;
+                    case 'K': val.add(13);
+                        break;  
+                    case 'A': val.add(14);
+                        break; 
+                    default: val.add(Character.getNumericValue(cval));
+                        break;    
+                }
+                suit.add(tempCards.get(i).charAt(1));
             }
-            suit.add(tempCards.get(i).charAt(1));
         }
 
 
@@ -170,9 +199,15 @@ public class RummyServiceStrategy implements IRummyService {
 
         
         if(valueMatch || (suitMatch && valueFollows)){
-            _cardsApi.discardCards(game.deckId, playerId, cards);
-            var drawnCards = _cardsApi.addCardsToPile(game.deckId, "Rummy", setId, cards);
-            return drawnCards;
+            _cardsApi.discardCards(game.deckId, "Player"+playerId, cards);
+            _cardsApi.addCardsToPile(game.deckId, "Rummy", setId, cards);
+            rgm.sets.remove(setId);
+            rgm.sets.add(cards);
+            for(int i = 0; i < rgm.players.size(); i++)
+            {
+                rgm.players.get(i).cards.removeIf(n -> cards.contains(n.code));
+            }
+            return rgm;
         }
         else
         {
@@ -196,10 +231,10 @@ public class RummyServiceStrategy implements IRummyService {
         return x;
     }
 
-    private void checkTurn(String gameId, String playerId, Boolean pickUp) {
+    private void checkTurn(String gameId, int playerId, Boolean pickUp) {
         RummyGameModel rgm = (RummyGameModel) _rummyRepo.Get(gameId);
 
-        if(playerId.compareTo("Player" + rgm.currentTurn) != 0)
+        if(playerId != rgm.currentTurn)
         {
             throw new BadRequestException(String.format("ERROR: Not %s's turn, Current Players turn: %s",playerId,"Player"+rgm.currentTurn));
         }
@@ -215,12 +250,14 @@ public class RummyServiceStrategy implements IRummyService {
     }
 
     private boolean checkComplete(String gameId, String playerId) {
+        RummyGameModel rgm = (RummyGameModel) _rummyRepo.Get(gameId);
         if(this.getCardsInPile(gameId, playerId).getCards().length() == 0)
         {
-            RummyGameModel rgm = (RummyGameModel) _rummyRepo.Get(gameId);
+            rgm.message = playerId+" wins";
             rgm.gameState = Constants.GameStates.COMPLETE;
             return true;
         }
+        rgm.gameState = Constants.GameStates.RUNNING;
         return false;
     }
 
