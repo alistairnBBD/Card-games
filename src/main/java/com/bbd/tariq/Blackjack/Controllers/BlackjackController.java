@@ -37,8 +37,7 @@ public class BlackjackController extends BaseController {
         *   4. Store game id and deck id in db
         *   5. Send back Json payload
         * */
-    var f = _blackjackService.newGame(postNewGameDto);;
-      return f;
+        return _blackjackService.newGame(postNewGameDto);
     }
 
     @PostMapping(value = "/hit")

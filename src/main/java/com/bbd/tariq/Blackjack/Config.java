@@ -12,6 +12,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 @Configuration
 @ComponentScan("com.bbd.tariq.blackjack")
@@ -41,6 +45,10 @@ public class Config {
 
     @Bean
     public IBlackjackService blackjackService() { return new BlackjackServiceStrategy(cardsApi(),repoFactory());}
+
+
+
+
 
 
 }
