@@ -10,4 +10,10 @@ public class DrawCardFromPileResponseModel extends PilesBaseResponseModel{
     @JsonProperty("cards")
     public ArrayList<CardModel> cards;
 
+    @Override
+    public String getCards() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

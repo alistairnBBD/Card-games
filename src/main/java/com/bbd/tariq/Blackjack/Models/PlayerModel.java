@@ -10,6 +10,16 @@ import java.util.ArrayList;
 @Setter
 public class PlayerModel {
 
+    public PlayerModel() {
+
+    }
+
+    public PlayerModel(int playerId, int score, String name) {
+        this.playerId = playerId;
+        this.score = score;
+        this.name = name;
+    }
+    
     @JsonProperty("playerId")
     public int playerId;
 

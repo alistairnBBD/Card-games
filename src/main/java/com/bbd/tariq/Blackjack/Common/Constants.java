@@ -9,6 +9,7 @@ public class Constants {
 
         public static final String SOLITAIRE = "Solitaire";
         public static final String GO_FISH = "GoFish";
+        public static final String RUMMY = "Rummy";
         public static final String BLACKJACK = "Blackjack";
         public static final String HILO = "Hilo";
     }
