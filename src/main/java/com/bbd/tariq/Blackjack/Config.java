@@ -1,5 +1,7 @@
 package com.bbd.tariq.Blackjack;
 
+import com.bbd.tariq.Blackjack.Interfaces.*;
+import com.bbd.tariq.Blackjack.Strategies.*;
 import com.bbd.tariq.Blackjack.Interfaces.IBlackjackService;
 import com.bbd.tariq.Blackjack.Interfaces.IGoFishService;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
