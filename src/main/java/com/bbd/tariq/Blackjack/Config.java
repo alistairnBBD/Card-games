@@ -1,17 +1,18 @@
 package com.bbd.tariq.Blackjack;
 
 import com.bbd.tariq.Blackjack.Interfaces.IBlackjackService;
+import com.bbd.tariq.Blackjack.Interfaces.IGoFishService;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
 import com.bbd.tariq.Blackjack.Interfaces.IHiloService;
 import com.bbd.tariq.Blackjack.Interfaces.IPileFactory;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Interfaces.IRummyService;
 import com.bbd.tariq.Blackjack.Strategies.BlackjackServiceStrategy;
+import com.bbd.tariq.Blackjack.Strategies.GoFishServiceStrategy;
 import com.bbd.tariq.Blackjack.Strategies.CardsApiStrategy;
 import com.bbd.tariq.Blackjack.Strategies.HiloServiceStrategy;
 import com.bbd.tariq.Blackjack.Strategies.PileFactoryStrategy;
 import com.bbd.tariq.Blackjack.Strategies.RepoFactoryStrategy;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.bbd.tariq.Blackjack.Strategies.RummyServiceStrategy;
 
@@ -52,6 +53,9 @@ public class Config {
 
     @Bean
     public IBlackjackService blackjackService() { return new BlackjackServiceStrategy(cardsApi(),repoFactory());}
+
+    @Bean
+    public IGoFishService gofishService() { return new  GoFishServiceStrategy(cardsApi(),repoFactory());}
 
     @Bean
     public IRummyService rummyService() { return new RummyServiceStrategy(cardsApi(),repoFactory());}
