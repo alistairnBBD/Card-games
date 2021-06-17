@@ -8,11 +8,13 @@ import java.util.Collections;
 import com.bbd.tariq.Blackjack.Common.Constants;
 import com.bbd.tariq.Blackjack.DTOS.GameDto;
 import com.bbd.tariq.Blackjack.DTOS.PostNewGameDto;
+import com.bbd.tariq.Blackjack.Exceptions.BadRequestException;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Interfaces.IRummyService;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.DrawCardResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
+import com.bbd.tariq.Blackjack.Models.RummyGame.RummyGameModel;
 import com.bbd.tariq.Blackjack.Models.RummyGame.RummyPilesResponseModel;
 import com.bbd.tariq.Blackjack.Strategies.RummyServiceStrategy;
 import com.fasterxml.jackson.databind.util.JSONWrappedObject;
@@ -40,18 +42,26 @@ public class RummyController extends BaseController {
     }
 
     @PostMapping(value = "/pickup")
-    public PilesBaseResponseModel Pickup(@RequestParam String gameId, String playerId, @RequestParam Boolean fromDeck) {
+    public RummyGameModel Pickup(@RequestParam String gameId, int playerId, @RequestParam Boolean fromDeck) {
         return _rummyService.Pickup(gameId, playerId, fromDeck);
     }
 
     @PostMapping(value = "/discard")
-    public PilesBaseResponseModel Discard(@RequestParam String gameId, String playerId, @RequestParam String cards) {
+    public RummyGameModel Discard(@RequestParam String gameId, int playerId, @RequestParam String cards) {
        return _rummyService.Discard(gameId, playerId, cards);
     }
 
     @PostMapping(value = "/makeAddSet")
-    public PilesBaseResponseModel MakeAddSet(@RequestParam String gameId, String playerId, String setId, @RequestParam String cards, @RequestParam Boolean make) {
-        return MakeAddSet(gameId, playerId, setId, cards, make);
+    public RummyGameModel MakeAddSet(@RequestParam String gameId, int playerId, @RequestParam(name = "setId", required = false) String setId, @RequestParam String cards, @RequestParam Boolean make) {
+        if(setId == null && make)
+        {
+            RummyGameModel rgm = (RummyGameModel) _repo.Get(gameId);
+            return MakeAddSet(gameId, playerId, rgm.sets.size()+"", cards, make);
+        }
+        if(setId == null && !make)
+            throw new BadRequestException(String.format("ERROR: Set id must be provided when adding to a set"));
+
+        return _rummyService.MakeAddSet(gameId, playerId, setId, cards, make);
     }
 
     //Solitaire
