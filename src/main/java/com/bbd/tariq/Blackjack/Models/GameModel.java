@@ -22,12 +22,8 @@ public class GameModel {
 
     public String gameState;
 
-    public LocalDateTime started;
-    public LocalDateTime ended;
-
     public GameModel() {
         gameId = UUID.randomUUID().toString();
-        started = LocalDateTime.now();
 
     }
 }
