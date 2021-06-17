@@ -3,6 +3,7 @@ package com.bbd.tariq.Blackjack.Strategies;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
 import com.bbd.tariq.Blackjack.Interfaces.IPileFactory;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.DrawCardResponseModel;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.DrawCardFromPileResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.ShuffleCardsResponseModel;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -33,18 +34,16 @@ public class CardsApiStrategy implements ICardsApi {
                 URI.create(String.format("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=%s",deckCount)))
                 .header("accept","application/json")
                 .build();
+        ShuffleCardsResponseModel shuffleCardsResponse;
 
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            ShuffleCardsResponseModel shuffleCardsResponse = _mapper.readValue(response.body(),ShuffleCardsResponseModel.class);
-            return shuffleCardsResponse;
+            shuffleCardsResponse = _mapper.readValue(response.body(), ShuffleCardsResponseModel.class);
+        } catch (Exception ex) {
+            shuffleCardsResponse = retryShuffleCardsRequest(request, 0);
         }
-        catch(Exception ex)
-        {
-            //Need to implement some sort of logging interface
-            System.out.println(ex);
-            return null;
-        }
+
+        return shuffleCardsResponse;
     }
 
     @Override
@@ -53,18 +52,16 @@ public class CardsApiStrategy implements ICardsApi {
                 URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/shuffle/",deckID)))
                 .header("accept","application/json")
                 .build();
+        ShuffleCardsResponseModel shuffleCardsResponse;
 
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            ShuffleCardsResponseModel shuffleCardsResponse = _mapper.readValue(response.body(),ShuffleCardsResponseModel.class);
-            return shuffleCardsResponse;
+            shuffleCardsResponse = _mapper.readValue(response.body(), ShuffleCardsResponseModel.class);
+        } catch (Exception ex) {
+            shuffleCardsResponse = retryShuffleCardsRequest(request, 0);
         }
-        catch(Exception ex)
-        {
-            //Need to implement some sort of logging interface
-            System.out.println(ex);
-            return null;
-        }
+
+        return shuffleCardsResponse;
     }
 
     @Override
@@ -74,20 +71,19 @@ public class CardsApiStrategy implements ICardsApi {
                 URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/draw/?count=%s",deckId,cardCount)))
                 .header("accept","application/json")
                 .build();
+        DrawCardResponseModel drawCardResponseModel;
 
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            DrawCardResponseModel drawCardResponseModel = _mapper.readValue(response.body(),DrawCardResponseModel.class);
-            return drawCardResponseModel;
+            drawCardResponseModel = _mapper.readValue(response.body(), DrawCardResponseModel.class);
+        } catch (Exception ex) {
+            drawCardResponseModel = retryDrawCardRequest(request, 0);
         }
-        catch(Exception ex)
-        {
-            //Need to implement some sort of logging interface
-            System.out.println(ex);
-            return null;
-        }
+
+        return drawCardResponseModel;
     }
 
+    //TODO, Do we even use this?
     @Override
     public DrawCardResponseModel discardCards(String deckId, String playerId, String cards) {
 
@@ -138,31 +134,45 @@ public class CardsApiStrategy implements ICardsApi {
     @Override
     public PilesBaseResponseModel addCardsToPile(String deckId, String pileType, String pileName, String cards) {
 
-          var request = HttpRequest.newBuilder(
+        var request = HttpRequest.newBuilder(
                 URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/add/?cards=%s",deckId,pileName,cards)))
                 .header("accept","application/json")
                 .build();
+        PilesBaseResponseModel addToPileResponseModel;
 
         System.out.println(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/add/?cards=%s",deckId,pileName,cards));
 
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            var pileModel = _pileFactory.getPile(pileType);
-            var addToPileResponseModel = _mapper.readValue(response.body(),pileModel.getClass());
+            PilesBaseResponseModel pileModel = _pileFactory.getPile(pileType);
+            addToPileResponseModel = _mapper.readValue(response.body(), pileModel.getClass());
             addToPileResponseModel.type = pileModel.type;
-            return addToPileResponseModel;
+        } catch (Exception ex) {
+            addToPileResponseModel = retryPilesBaseRequest(request, pileType, 0);
         }
-        catch(Exception ex)
-        {
-            //Need to implement some sort of logging interface
-            System.out.println(ex);
-            return null;
-        }
+
+        return addToPileResponseModel;
     }
 
+    //TODO
     @Override
     public PilesBaseResponseModel shufflePile(String deckId, String pileType, String PileName) {
-        return null;
+        var request = HttpRequest.newBuilder(
+                URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/shuffle/",deckId, PileName)))
+                .header("accept","application/json")
+                .build();
+        PilesBaseResponseModel addToPileResponseModel;
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            PilesBaseResponseModel pileModel = _pileFactory.getPile(pileType);
+            addToPileResponseModel = _mapper.readValue(response.body(), pileModel.getClass());
+            addToPileResponseModel.type = pileModel.type;
+        } catch (Exception ex) {
+            addToPileResponseModel = retryPilesBaseRequest(request, pileType, 0);
+        }
+
+        return addToPileResponseModel;
     }
 
     @Override
@@ -172,19 +182,116 @@ public class CardsApiStrategy implements ICardsApi {
                 URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/list/",deckId,pileName)))
                 .header("accept","application/json")
                 .build();
+        PilesBaseResponseModel addToPileResponseModel;
 
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            var pileModel = _pileFactory.getPile(pileType);
-            var addToPileResponseModel = _mapper.readValue(response.body(),pileModel.getClass());
-            return addToPileResponseModel;
+            PilesBaseResponseModel pileModel = _pileFactory.getPile(pileType);
+            addToPileResponseModel = _mapper.readValue(response.body(), pileModel.getClass());
+            addToPileResponseModel.type = pileModel.type;
+        } catch(Exception ex) {
+            addToPileResponseModel = retryPilesBaseRequest(request, pileType, 0);
         }
-        catch(Exception ex)
-        {
-            //Need to implement some sort of logging interface
-            System.out.println(ex);
+
+        return addToPileResponseModel;
+    }
+
+    @Override
+    public DrawCardFromPileResponseModel drawFromPile(String deckId, String pileType, String pileName, String cards) {
+        var request = HttpRequest.newBuilder(
+                URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/draw/?cards=%s",deckId,pileName,cards)))
+                .header("accept","application/json")
+                .build();
+        DrawCardFromPileResponseModel drawCardFromPileResponseModel;
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            drawCardFromPileResponseModel = _mapper.readValue(response.body(), DrawCardFromPileResponseModel.class);
+        } catch (Exception ex) {
+            drawCardFromPileResponseModel = retryDrawCardFromPileRequest(request, 0);
+        }
+
+        return drawCardFromPileResponseModel;
+    }
+
+    @Override
+    public DrawCardFromPileResponseModel drawFromPile(String deckId, String pileType, String pileName, int cardCount) {
+        var request = HttpRequest.newBuilder(
+                URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/draw/?count=%s",deckId,pileName,cardCount)))
+                .header("accept","application/json")
+                .build();
+        DrawCardFromPileResponseModel drawCardFromPileResponseModel;
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            drawCardFromPileResponseModel = _mapper.readValue(response.body(), DrawCardFromPileResponseModel.class);
+        } catch (Exception ex) {
+            drawCardFromPileResponseModel = retryDrawCardFromPileRequest(request, 0);
+        }
+
+        return drawCardFromPileResponseModel;
+    }
+
+    private ShuffleCardsResponseModel retryShuffleCardsRequest(HttpRequest request, int attempt) {
+        ShuffleCardsResponseModel shuffleCardsResponse;
+        if (attempt > 5) {
             return null;
         }
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            shuffleCardsResponse = _mapper.readValue(response.body(), ShuffleCardsResponseModel.class);
+        } catch (Exception e) {
+            shuffleCardsResponse = retryShuffleCardsRequest(request, ++attempt);
+        }
+        return shuffleCardsResponse;
+    }
+
+    private DrawCardResponseModel retryDrawCardRequest(HttpRequest request, int attempt) {
+        DrawCardResponseModel drawCardResponse;
+        if (attempt > 5) {
+            return null;
+        }
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            drawCardResponse = _mapper.readValue(response.body(), DrawCardResponseModel.class);
+        } catch (Exception e) {
+            drawCardResponse = retryDrawCardRequest(request, ++attempt);
+        }
+        return drawCardResponse;
+    }
+
+    private PilesBaseResponseModel retryPilesBaseRequest(HttpRequest request, String pileType, int attempt) {
+        PilesBaseResponseModel pilesBaseResponse;
+        if (attempt > 5) {
+            return null;
+        }
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            PilesBaseResponseModel pileModel = _pileFactory.getPile(pileType);
+            pilesBaseResponse = _mapper.readValue(response.body(), pileModel.getClass());
+            pilesBaseResponse.type = pileModel.type;
+        } catch (Exception e) {
+            pilesBaseResponse = retryPilesBaseRequest(request, pileType, ++attempt);
+        }
+        return pilesBaseResponse;
+    }
+
+    private DrawCardFromPileResponseModel retryDrawCardFromPileRequest(HttpRequest request, int attempt) {
+        DrawCardFromPileResponseModel drawCardFromPileResponse;
+        if (attempt > 5) {
+            return null;
+        }
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            drawCardFromPileResponse = _mapper.readValue(response.body(), DrawCardFromPileResponseModel.class);
+        } catch (Exception e) {
+            drawCardFromPileResponse = retryDrawCardFromPileRequest(request, ++attempt);
+        }
+        return drawCardFromPileResponse;
     }
 
 

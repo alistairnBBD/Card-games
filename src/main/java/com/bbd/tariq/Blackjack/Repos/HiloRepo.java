@@ -4,9 +4,8 @@ import com.bbd.tariq.Blackjack.Exceptions.BadRequestException;
 import com.bbd.tariq.Blackjack.Models.GameModel;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
-public class BlackjackRepo extends Repo {
+public class HiloRepo extends Repo {
 
     private HashMap<String,GameModel> games = new HashMap<>();
     @Override
@@ -20,7 +19,7 @@ public class BlackjackRepo extends Repo {
 
     @Override
     public void Insert(GameModel model) {
-        games.put(model.gameId,model);
+        games.put(model.gameId, model);
     }
 
     @Override

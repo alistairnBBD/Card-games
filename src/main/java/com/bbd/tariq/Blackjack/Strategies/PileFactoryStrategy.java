@@ -2,10 +2,10 @@ package com.bbd.tariq.Blackjack.Strategies;
 
 import com.bbd.tariq.Blackjack.Common.Constants;
 import com.bbd.tariq.Blackjack.Interfaces.IPileFactory;
-import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.GoFish.GoFishPilesResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Rummy.RummyPilesResponseModel;
+import com.bbd.tariq.Blackjack.Models.GoFishGame.GoFishPilesResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
-import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Solitaire.SolitairePilesResponseModel;
+import com.bbd.tariq.Blackjack.Models.SolitaireGame.SolitairePilesResponseModel;
 
 public class PileFactoryStrategy implements IPileFactory {
     @Override
