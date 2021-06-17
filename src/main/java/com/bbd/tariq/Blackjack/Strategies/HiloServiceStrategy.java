@@ -52,10 +52,11 @@ public class HiloServiceStrategy implements IHiloService {
             CardModel lastCard = gameModel.player.cards.get(gameModel.player.cards.size() - 1);
             DrawCardResponseModel drawnCard = _cardsApi.drawCards(gameModel.deckId, 1);
 
-            if (drawnCard.cards.size() == 0) {
+            if (drawnCard.cards == null || drawnCard.cards.size() == 0) {
                 _cardsApi.shuffleCards(gameModel.deckId);
-                for (int i = 0; i < 52; i++) {
-                    gameModel.player.cards.remove(i);
+                int playerStackSize = gameModel.player.cards.size();
+                for (int i = 0; i < playerStackSize; i++) {
+                    gameModel.player.cards.remove(0);
                 }
 
                 drawnCard = _cardsApi.drawCards(gameModel.deckId, 1);
