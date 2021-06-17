@@ -75,4 +75,13 @@ public class Constants {
         public static final String REPO_NAME = "Blackjack";
     }
 
+    public static class GoFish {
+        
+        public static class GoFishActions {
+            public static final String HIT = "Ask";
+    }
+        public static final int MAX_PLAYERS = 5;
+        public static final int MIN_PLAYERS = 2;
+        public static final String REPO_NAME = "GoFish";
+    }
 }
