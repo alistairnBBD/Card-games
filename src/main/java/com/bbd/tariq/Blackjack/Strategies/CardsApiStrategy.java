@@ -36,8 +36,8 @@ public class CardsApiStrategy implements ICardsApi {
                 .build();
 
         try {
-            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            ShuffleCardsResponseModel shuffleCardsResponse = _mapper.readValue(response.body(),ShuffleCardsResponseModel.class);
+            var response =  _httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body);
+            ShuffleCardsResponseModel shuffleCardsResponse = _mapper.readValue(response.get(),ShuffleCardsResponseModel.class);
             return shuffleCardsResponse;
         }
         catch(Exception ex)

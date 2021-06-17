@@ -66,21 +66,7 @@ public class BlackjackServiceStrategy implements IBlackjackService {
             String drawnCard = null;
             for (int j = 0; j < numOfPlayers; j++) {
                 var currentPlayer = blackjackGameModel.players.get(j);
-                switch (j) {
-                    case 0:
-                       currentPlayer.cards.add(drawnCards.cards.get(j));
-                        break;
-                    case 1:
-                       currentPlayer.cards.add(drawnCards.cards.get(j));
-                        break;
-                    case 2:
-                        currentPlayer.cards.add(drawnCards.cards.get(j));
-                        break;
-                    case 3:
-                        currentPlayer.cards.add(drawnCards.cards.get(j));
-                        break;
-
-                }
+                currentPlayer.cards.add(drawnCards.cards.get(j));
                 currentPlayer.score = CalculateScore(currentPlayer);
                 currentPlayer.blackjack = isBlackjack(currentPlayer);
             }
