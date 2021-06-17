@@ -10,7 +10,8 @@ import java.util.ArrayList;
 @Getter @Setter
 public class BlackjackGameModel extends GameModel {
 
-    public int turn  = 0;
+    public int currentTurn = 0;
+    public int totalTurnsPerRound;
     public ArrayList<BlackjackPlayer> players;
 
     public BlackjackGameModel(){

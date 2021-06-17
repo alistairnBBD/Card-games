@@ -4,6 +4,7 @@ import com.bbd.tariq.Blackjack.Common.Constants;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Repos.BlackjackRepo;
 import com.bbd.tariq.Blackjack.Repos.GoFishRepo;
+import com.bbd.tariq.Blackjack.Repos.HiloRepo;
 import com.bbd.tariq.Blackjack.Repos.Repo;
 
 public class RepoFactoryStrategy implements IRepoFactory {
@@ -16,6 +17,9 @@ public class RepoFactoryStrategy implements IRepoFactory {
                 return new BlackjackRepo();
             case Constants.GoFish.REPO_NAME:
                 return new GoFishRepo();
+
+            case Constants.Hilo.REPO_NAME:
+                return new HiloRepo();
 
             default:
                 return null;

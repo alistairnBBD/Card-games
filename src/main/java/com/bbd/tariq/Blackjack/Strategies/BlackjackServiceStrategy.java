@@ -3,7 +3,6 @@ package com.bbd.tariq.Blackjack.Strategies;
 import com.bbd.tariq.Blackjack.Common.Constants;
 import com.bbd.tariq.Blackjack.DTOS.PostNewGameDto;
 import com.bbd.tariq.Blackjack.Exceptions.BadRequestException;
-import com.bbd.tariq.Blackjack.Exceptions.ContentNotFoundException;
 import com.bbd.tariq.Blackjack.Interfaces.IBlackjackService;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
@@ -45,10 +44,13 @@ public class BlackjackServiceStrategy implements IBlackjackService {
             bjp.playerId = player.playerId;
             blackjackGameModel.players.add(bjp);
         }
-
+        blackjackGameModel.gameState = Constants.GameStates.RUNNING;
         blackjackGameModel.deckId = newDeck.deckId;
         blackjackGameModel.score = 0;
-        blackjackGameModel.turn = 1; //player 1 turn
+        blackjackGameModel.currentTurn = 1; //player 1 turn
+        blackjackGameModel.totalTurnsPerRound = blackjackGameModel.players.size()+1; //+1 for the dealer;
+
+        //Dealer setup
         blackjackGameModel.dealer = new BlackjackPlayer();
         blackjackGameModel.dealer.playerId = 999015235; //Arbitrary big int for dealer id
         blackjackGameModel.dealer.name = String.format("Dealer %s", _dealers.size());
@@ -64,21 +66,7 @@ public class BlackjackServiceStrategy implements IBlackjackService {
             String drawnCard = null;
             for (int j = 0; j < numOfPlayers; j++) {
                 var currentPlayer = blackjackGameModel.players.get(j);
-                switch (j) {
-                    case 0:
-                       currentPlayer.cards.add(drawnCards.cards.get(j));
-                        break;
-                    case 1:
-                       currentPlayer.cards.add(drawnCards.cards.get(j));
-                        break;
-                    case 2:
-                        currentPlayer.cards.add(drawnCards.cards.get(j));
-                        break;
-                    case 3:
-                        currentPlayer.cards.add(drawnCards.cards.get(j));
-                        break;
-
-                }
+                currentPlayer.cards.add(drawnCards.cards.get(j));
                 currentPlayer.score = CalculateScore(currentPlayer);
                 currentPlayer.blackjack = isBlackjack(currentPlayer);
             }
@@ -98,6 +86,11 @@ public class BlackjackServiceStrategy implements IBlackjackService {
     @Override
     public BlackjackGameModel hit(String gameId, int playerId) {
         var blackjackGameModel = (BlackjackGameModel) _blackjackRepo.Get(gameId);
+
+        if(blackjackGameModel.gameState.equals(Constants.GameStates.COMPLETE)) {
+            throw new BadRequestException(String.format("Game %s is Complete",gameId));
+        }
+
         var player = blackjackGameModel.players.stream().filter(p ->p.playerId == playerId).findFirst().orElse(null);
 
         preliminaryChecks(blackjackGameModel,player,playerId);
@@ -111,20 +104,20 @@ public class BlackjackServiceStrategy implements IBlackjackService {
         if(player.score>21)
         {
             player.bust = true;
-            blackjackGameModel.turn++;
+            blackjackGameModel.currentTurn++;
         }
         else if(player.blackjack) {
-            blackjackGameModel.turn++;
+            blackjackGameModel.currentTurn++;
         }
 
 
         //last player on the table has played, lets piggy back and do the dealers move as well
-        if(blackjackGameModel.turn == blackjackGameModel.players.size()+1)
+        if(blackjackGameModel.currentTurn == blackjackGameModel.players.size())
         {
-            return performDealerMoves(blackjackGameModel);
+            blackjackGameModel =  performDealerMoves(blackjackGameModel);
         }
 
-
+        blackjackGameModel = determineOutcome(blackjackGameModel);
         _blackjackRepo.Update(blackjackGameModel);
         return blackjackGameModel;
     }
@@ -132,18 +125,25 @@ public class BlackjackServiceStrategy implements IBlackjackService {
     @Override
     public BlackjackGameModel stand(String gameId, int playerId) {
         var blackjackGameModel = (BlackjackGameModel) _blackjackRepo.Get(gameId);
+
+        if(blackjackGameModel.gameState.equals(Constants.GameStates.COMPLETE)) {
+            throw new BadRequestException(String.format("Game %s is Complete",gameId));
+        }
+
         var player = blackjackGameModel.players.stream().filter(p ->p.playerId == playerId).findFirst().orElse(null);
 
         preliminaryChecks(blackjackGameModel,player,playerId);
 
         player.action = Constants.Blackjack.BlackJackActions.STAND;
-        blackjackGameModel.turn++;
+        blackjackGameModel.currentTurn++;
 
         //last player on the table has played, lets piggy back and do the dealers move as well
-        if(blackjackGameModel.turn == blackjackGameModel.players.size()+1)
+        if(blackjackGameModel.currentTurn == blackjackGameModel.players.size()+1)
         {
-            return performDealerMoves(blackjackGameModel);
+            blackjackGameModel =  performDealerMoves(blackjackGameModel);
         }
+        blackjackGameModel = determineOutcome(blackjackGameModel);
+        _blackjackRepo.Update(blackjackGameModel);
         return blackjackGameModel;
     }
 
@@ -188,15 +188,15 @@ public class BlackjackServiceStrategy implements IBlackjackService {
             }
 
         }
-        blackjackGameModel.turn =1;
+        blackjackGameModel.currentTurn =1;
         return blackjackGameModel;
     }
 
     private void preliminaryChecks(BlackjackGameModel blackjackGameModel, BlackjackPlayer player, int requestedPlayerId) {
 
-        if(player.playerId != blackjackGameModel.turn) {
-            System.out.println(String.format("ERROR: Not Player %s turn, Current Players turn: %s",requestedPlayerId,blackjackGameModel.turn));
-            throw new BadRequestException(String.format("ERROR: Not Player %s's turn, Current Players turn: %s",requestedPlayerId,blackjackGameModel.turn));
+        if(player.playerId != blackjackGameModel.currentTurn) {
+            System.out.println(String.format("ERROR: Not Player %s turn, Current Players turn: %s",requestedPlayerId,blackjackGameModel.currentTurn));
+            throw new BadRequestException(String.format("ERROR: Not Player %s's turn, Current Players turn: %s",requestedPlayerId,blackjackGameModel.currentTurn));
         }
         if(player.blackjack) {
             System.out.println(String.format("ERROR: Player %s has gotten Blackjack this round already!", player.playerId));
@@ -206,7 +206,20 @@ public class BlackjackServiceStrategy implements IBlackjackService {
 
     }
     //TODO
-    private void determineOutcome() {
+    private BlackjackGameModel determineOutcome(BlackjackGameModel blackjackGameModel) {
 
+        //Check if there is an active player (bust = false)
+        var activePlayer = blackjackGameModel.players.stream().filter(player -> !player.bust).findFirst().orElse(null);
+
+        // dealer bust
+        if(blackjackGameModel.dealer.bust) {
+            blackjackGameModel.gameState = Constants.GameStates.COMPLETE;
+        }
+
+        else if(activePlayer!=null) {
+            blackjackGameModel.gameState = Constants.GameStates.RUNNING;
+        }
+
+        return blackjackGameModel;
     }
 }
