@@ -13,8 +13,11 @@ import com.bbd.tariq.Blackjack.Strategies.CardsApiStrategy;
 import com.bbd.tariq.Blackjack.Strategies.HiloServiceStrategy;
 import com.bbd.tariq.Blackjack.Strategies.PileFactoryStrategy;
 import com.bbd.tariq.Blackjack.Strategies.RepoFactoryStrategy;
+import com.bbd.tariq.Blackjack.Interfaces.*;
+import com.bbd.tariq.Blackjack.Strategies.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.bbd.tariq.Blackjack.Strategies.RummyServiceStrategy;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -62,5 +65,9 @@ public class Config {
 
     @Bean
     public IHiloService hiloService() { return new HiloServiceStrategy(cardsApi(), repoFactory());}
+
+    @Bean
+    public ISecurityService securityService() {return new SecurityServiceStrategy();}
+
 
 }
