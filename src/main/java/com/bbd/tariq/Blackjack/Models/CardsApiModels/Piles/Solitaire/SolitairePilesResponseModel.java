@@ -12,6 +12,12 @@ public class SolitairePilesResponseModel extends PilesBaseResponseModel {
     @JsonProperty("piles")
     public SolitairePilesModel solitairePiles;
 
+    @Override
+    public String getCards() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 
 
 }

@@ -3,6 +3,7 @@ package com.bbd.tariq.Blackjack.Strategies;
 import com.bbd.tariq.Blackjack.Common.Constants;
 import com.bbd.tariq.Blackjack.Interfaces.IPileFactory;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.GoFish.GoFishPilesResponseModel;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Rummy.RummyPilesResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Solitaire.SolitairePilesResponseModel;
 
@@ -21,6 +22,11 @@ public class PileFactoryStrategy implements IPileFactory {
                 var goFish = new GoFishPilesResponseModel();
                 goFish.type = Constants.PileTypes.GO_FISH;
                 return goFish;
+
+            case Constants.PileTypes.RUMMY:
+                var rummy = new RummyPilesResponseModel();
+                rummy.type = Constants.PileTypes.GO_FISH;
+                return rummy;
 
             default:
                 return null;

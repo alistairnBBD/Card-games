@@ -21,5 +21,6 @@ public class GameModel {
 
     public GameModel() {
         gameId = UUID.randomUUID().toString();
+        System.out.println(gameId);
     }
 }

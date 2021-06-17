@@ -7,6 +7,7 @@ public class Constants {
 
         public static final String SOLITAIRE = "Solitaire";
         public static final String GO_FISH = "GoFish";
+        public static final String RUMMY = "Rummy";
     }
 
     public static class SolitairePileNames {
@@ -20,7 +21,7 @@ public class Constants {
 
     public static class GoFishPileNames {
 
-        public static final String PLAYER_1_PILE_NAME = "Player1PileName";
+        public static final String PLAYER_1_PILE_NAME = "Player0";
     }
 
 }

@@ -13,6 +13,7 @@ import lombok.Setter;
 @Getter @Setter
 
 public abstract class PilesBaseResponseModel extends BaseCardsResponseModel {
-
+        public abstract String getCards();
         public String type;
+
 }

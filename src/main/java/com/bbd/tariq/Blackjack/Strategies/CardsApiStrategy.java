@@ -89,6 +89,48 @@ public class CardsApiStrategy implements ICardsApi {
     }
 
     @Override
+    public DrawCardResponseModel discardCards(String deckId, String playerId, String cards) {
+
+        var request = HttpRequest.newBuilder(
+                URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/draw/?cards=%s",deckId,playerId,cards)))
+                .header("accept","application/json")
+                .build();
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            DrawCardResponseModel drawCardResponseModel = _mapper.readValue(response.body(),DrawCardResponseModel.class);
+            return drawCardResponseModel;
+        }
+        catch(Exception ex)
+        {
+            //Need to implement some sort of logging interface
+            System.out.println(ex);
+            return null;
+        }
+    }
+
+    
+    @Override
+    public DrawCardResponseModel drawDiscard(String deckId) {
+        var request = HttpRequest.newBuilder(
+            URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/discard/draw/?count=1",deckId)))
+            .header("accept","application/json")
+            .build();
+
+        try {
+            var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            DrawCardResponseModel drawCardResponseModel = _mapper.readValue(response.body(),DrawCardResponseModel.class);
+            return drawCardResponseModel;
+        }
+        catch(Exception ex)
+        {
+            //Need to implement some sort of logging interface
+            System.out.println(ex);
+            return null;
+        }
+    }
+
+    @Override
     public ShuffleCardsResponseModel getPartialDeck(PriorityQueue<String> cards) {
         return null;
     }
@@ -100,6 +142,8 @@ public class CardsApiStrategy implements ICardsApi {
                 URI.create(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/add/?cards=%s",deckId,pileName,cards)))
                 .header("accept","application/json")
                 .build();
+
+        System.out.println(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/add/?cards=%s",deckId,pileName,cards));
 
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -142,5 +186,6 @@ public class CardsApiStrategy implements ICardsApi {
             return null;
         }
     }
+
 
 }
