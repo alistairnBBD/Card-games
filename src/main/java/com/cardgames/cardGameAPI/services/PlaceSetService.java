@@ -11,6 +11,9 @@ public class PlaceSetService {
     public static String addCreateSet(String deckID, String playerName, String cards, String pile) {
         DrawResponse response = _rest.getForObject("https://deckofcardsapi.com/api/deck/"+deckID+"/pile/"+playerName+"/draw/?cards=" + cards, DrawResponse.class);
         _rest.getForObject("https://deckofcardsapi.com/api/deck/"+deckID+"/pile/"+pile+"/add/?cards=" + cards, DrawResponse.class);
+        if (response == null) {
+            return "";
+        }
         return response.getCards();
     }
 }
