@@ -140,8 +140,6 @@ public class CardsApiStrategy implements ICardsApi {
                 .build();
         PilesBaseResponseModel addToPileResponseModel;
 
-        System.out.println(String.format("https://deckofcardsapi.com/api/deck/%s/pile/%s/add/?cards=%s",deckId,pileName,cards));
-
         try {
             var response =  _httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             PilesBaseResponseModel pileModel = _pileFactory.getPile(pileType);

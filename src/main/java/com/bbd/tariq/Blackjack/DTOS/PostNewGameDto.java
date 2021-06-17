@@ -14,4 +14,5 @@ public class PostNewGameDto {
     public int deckCount;
     @JsonProperty("players")
     public ArrayList<PlayerModel> players;
+
 }

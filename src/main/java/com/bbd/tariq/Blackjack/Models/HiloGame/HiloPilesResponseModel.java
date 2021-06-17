@@ -4,4 +4,10 @@ import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseMode
 
 public class HiloPilesResponseModel extends PilesBaseResponseModel {
 
+    @Override
+    public String getCards() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

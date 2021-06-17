@@ -1,4 +1,4 @@
-package com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Rummy;
+package com.bbd.tariq.Blackjack.Models.RummyGame;
 
 import java.util.ArrayList;
 

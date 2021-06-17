@@ -1,5 +1,4 @@
-package com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.Rummy;
-
+package com.bbd.tariq.Blackjack.Models.RummyGame;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PileInfo;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
 import com.fasterxml.jackson.annotation.JsonProperty;
