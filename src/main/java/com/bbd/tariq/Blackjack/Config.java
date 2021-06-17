@@ -2,10 +2,12 @@ package com.bbd.tariq.Blackjack;
 
 import com.bbd.tariq.Blackjack.Interfaces.IBlackjackService;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
+import com.bbd.tariq.Blackjack.Interfaces.IHiloService;
 import com.bbd.tariq.Blackjack.Interfaces.IPileFactory;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Strategies.BlackjackServiceStrategy;
 import com.bbd.tariq.Blackjack.Strategies.CardsApiStrategy;
+import com.bbd.tariq.Blackjack.Strategies.HiloServiceStrategy;
 import com.bbd.tariq.Blackjack.Strategies.PileFactoryStrategy;
 import com.bbd.tariq.Blackjack.Strategies.RepoFactoryStrategy;
 import org.modelmapper.ModelMapper;
@@ -46,9 +48,6 @@ public class Config {
     @Bean
     public IBlackjackService blackjackService() { return new BlackjackServiceStrategy(cardsApi(),repoFactory());}
 
-
-
-
-
-
+    @Bean
+    public IHiloService hiloService() { return new HiloServiceStrategy(cardsApi(), repoFactory());}
 }
