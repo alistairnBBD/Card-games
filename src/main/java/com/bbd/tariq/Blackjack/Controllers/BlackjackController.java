@@ -27,7 +27,7 @@ public class BlackjackController extends BaseController {
         _blackjackService = blackjackService;
     }
 
-    @GetMapping(value = "/newgame", consumes = "application/json")
+    @PostMapping(value = "/newgame", consumes = "application/json")
     public BlackjackGameModel newGame(@RequestBody PostNewGameDto postNewGameDto) {
         /*
         * Logic:

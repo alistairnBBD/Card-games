@@ -9,7 +9,6 @@ public class Constants {
 
         public static final String SOLITAIRE = "Solitaire";
         public static final String GO_FISH = "GoFish";
-        public static final String BLACKJACK = "Blackjack";
     }
 
     public static class SolitairePileNames {
@@ -26,7 +25,11 @@ public class Constants {
         public static final String PLAYER_1_PILE_NAME = "Player1Pile";
     }
 
-
+    public static class GameStates {
+        public static final String COMPLETE = "Complete";
+        public static final String RUNNING = "Running";
+        public static final String INCOMPLETE = "Incomplete"; //Game abandoned?
+    }
 
     public static class Blackjack {
 
