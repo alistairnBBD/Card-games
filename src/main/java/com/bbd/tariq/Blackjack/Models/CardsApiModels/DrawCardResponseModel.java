@@ -14,9 +14,9 @@ public class DrawCardResponseModel extends BaseCardsResponseModel{
 
         String s = "";
         if(cards != null)
-        for(int i = 0; i < cards.size(); i++){
-            s += cards.get(i).code + ",";
-        }
+            for(int i = 0; i < cards.size(); i++){
+                s += cards.get(i).code + ",";
+            }
         return s;
     }
 }

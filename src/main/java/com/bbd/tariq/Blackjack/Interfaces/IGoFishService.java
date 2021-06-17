@@ -6,5 +6,5 @@ import com.bbd.tariq.Blackjack.Models.GoFishGame.GoFishGameModel;
 public interface IGoFishService {
 
     GoFishGameModel newGame(PostNewGameDto newGameDto);
-    GoFishGameModel ask(String gameId, int playerId, int targetId, String card);
+    GoFishGameModel ask(String gameId, int playerId, int targetId, char card);
 }

@@ -49,12 +49,11 @@ public class GoFishServiceStrategy implements IGoFishService {
         gofishGameModel.score = 0;
         gofishGameModel.turn = 1; //player 1 turn
 
-        int numOfPlayers = gofishGameModel.players.size();
-
-        //Deal Cards out to Players and Dealer
+        //Deal Cards out to Players
         for (int i = 0; i < 2; i++) {
-            var drawnCards = _cardsApi.drawCards(gofishGameModel.deckId, 7);
-            for (int j = 0; j < numOfPlayers; j++) {
+            int draws = 7;
+            var drawnCards = _cardsApi.drawCards(gofishGameModel.deckId, draws);
+            for (int j = 0; j < draws; j++) {
                 var currentPlayer = gofishGameModel.players.get(j);
                 currentPlayer.cards.add(drawnCards.cards.get(j));
             }
@@ -67,12 +66,24 @@ public class GoFishServiceStrategy implements IGoFishService {
     }
 
     @Override
-    public GoFishGameModel ask(String gameId, int playerId, int targetId, String card) {
+    public GoFishGameModel ask(String gameId, int playerId, int targetId, char card) {
         var gofishGameModel = (GoFishGameModel) _gofishRepo.Get(gameId);
         var player = gofishGameModel.players.stream().filter(p ->p.playerId == playerId).findFirst().orElse(null);
+        var target = gofishGameModel.players.stream().filter(p ->p.playerId == targetId).findFirst().orElse(null);
 
         preliminaryChecks(gofishGameModel,player,playerId);
 
+        if (player.cards.isEmpty()) {
+            int winner = determineOutcome(gofishGameModel.players);
+            gofishGameModel.gameState = String.format("Player %s won", winner);
+            return gofishGameModel;
+        }
+        var targetCards = target.cards.stream().filter(c -> c.code.charAt(0) == card).findAny().orElse(null);
+        if (targetCards != null) {
+            //take cards
+            //check set
+            return gofishGameModel;
+        }
         var drawnCard = _cardsApi.drawCards(gofishGameModel.deckId,1).cards.get(0);
         player.cards.add(drawnCard);
         player.action = "ask";
