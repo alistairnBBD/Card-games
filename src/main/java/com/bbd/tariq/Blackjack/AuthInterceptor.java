@@ -18,7 +18,11 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
 
     @Autowired
-    private ISecurityService securityService;
+    private ISecurityService _securityService;
+
+    public AuthInterceptor(ISecurityService securityService) {
+        _securityService = securityService;
+    }
 
 
     @Override
@@ -34,7 +38,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             throw new UnauthorisedException("ERROR: Authorization is required.");
 
 
-        var auth = securityService.checkAuthentication(jwt);
+        var auth = _securityService.checkAuthentication(jwt);
 
         if(!auth)
             throw new UnauthorisedException("ERROR: Authorization is required.");
