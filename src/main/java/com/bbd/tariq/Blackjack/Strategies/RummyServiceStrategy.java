@@ -28,7 +28,7 @@ public class RummyServiceStrategy implements IRummyService {
     public RummyServiceStrategy(ICardsApi cardsApi, IRepoFactory repoFactory) {
 
         _cardsApi = cardsApi;
-        _rummyRepo = repoFactory.getRepo(Constants.Blackjack.REPO_NAME);
+        _rummyRepo = repoFactory.getRepo(Constants.Rummy.REPO_NAME);
     }
 
     public RummyGameModel newGame(PostNewGameDto newGameDto) {

@@ -135,4 +135,12 @@ public class Constants {
             public static final int KING = 13;
         }
     }
+
+    public static class Rummy {
+        public final static String REPO_NAME = "Rummy";
+    }
+
+    public static class Schedules {
+        public static final long SECURITY_SERVICE_JWT_REFRESH = 10*1000;//4*60*60*1000;
+    }
 }

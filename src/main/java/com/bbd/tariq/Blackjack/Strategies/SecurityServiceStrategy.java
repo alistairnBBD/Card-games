@@ -1,6 +1,9 @@
 package com.bbd.tariq.Blackjack.Strategies;
 
+import com.bbd.tariq.Blackjack.BlackjackApplication;
+import com.bbd.tariq.Blackjack.Interfaces.IObserver;
 import com.bbd.tariq.Blackjack.Interfaces.ISecurityService;
+import com.bbd.tariq.Blackjack.Interfaces.ISubject;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -13,12 +16,15 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 
-public class SecurityServiceStrategy implements ISecurityService {
+public class SecurityServiceStrategy implements ISecurityService, IObserver {
 
     private HashMap<String,String> activeJWTS;
+    private ArrayList<IObserver> observers;
 
     public SecurityServiceStrategy() {
         activeJWTS = new HashMap<>();
+        observers = new ArrayList<>();
+        BlackjackApplication._observers.add(this);
     }
 
     @Override
@@ -58,9 +64,6 @@ public class SecurityServiceStrategy implements ISecurityService {
 
            return jwt;
 
-
-
-
     }
 
     @Override
@@ -82,6 +85,18 @@ public class SecurityServiceStrategy implements ISecurityService {
 
         return  true;
 
+    }
+
+    @Override
+    public void update() {
+
+        activeJWTS.entrySet().removeIf(kv -> {
+            var jwt = kv.getValue();
+            Claims claim = Jwts.parser()
+                    .setSigningKey(Base64.getEncoder().encodeToString(new String("test secret key").getBytes()))
+                    .parseClaimsJws(jwt).getBody();
+            return claim.getExpiration().before(new Date(System.currentTimeMillis()));
+        });
 
     }
 }
