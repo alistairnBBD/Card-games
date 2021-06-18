@@ -27,7 +27,7 @@ public class GoFishController extends BaseController {
         _gofishService = gofishService;
     }
 
-    @GetMapping(value = "/newgame", consumes = "application/json")
+    @PostMapping(value = "/newgame", consumes = "application/json")
     public GoFishGameModel newGame(@RequestBody PostNewGameDto postNewGameDto) {
         /*
         * Logic:
@@ -43,7 +43,7 @@ public class GoFishController extends BaseController {
     @PostMapping(value = "/ask")
     public GoFishGameModel Ask(@RequestParam String gameId, int playerId, int targetId, String card) {
 
-        return _gofishService.ask(gameId,playerId,targetId,card);
+        return _gofishService.ask(gameId,playerId,targetId,card.charAt(0));
     }
 
 }
