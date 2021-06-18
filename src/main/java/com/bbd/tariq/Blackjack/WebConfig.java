@@ -20,6 +20,11 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new AuthInterceptor(_secSecurityService))
                 .addPathPatterns("/**")
                 .excludePathPatterns(
-                        "/auth/**").pathMatcher(new AntPathMatcher());
+                        "/auth/**",
+                        "/swagger-ui.html",
+                        "/webjars/**",
+                        "/swagger-resources/**",
+                        "/swagger-ui/**",
+                        "/v2/api-docs/**").pathMatcher(new AntPathMatcher());
     }
 }
