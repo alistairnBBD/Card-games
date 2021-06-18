@@ -27,6 +27,7 @@ public class BlackjackRepo extends Repo {
             var res = statement.executeQuery();
             res.next();
             gameInstance = objectMapper.readValue(res.getString("instanceData"), BlackjackGameModel.class);
+            dbConn.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } catch (JsonMappingException e) {
@@ -39,6 +40,7 @@ public class BlackjackRepo extends Repo {
         if(gameInstance==null){
             throw new BadRequestException("Failed to find game instance with provided game Id!");
         }
+
         return gameInstance;
     }
 

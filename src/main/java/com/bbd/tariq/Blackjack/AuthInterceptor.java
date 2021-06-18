@@ -34,13 +34,13 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         var jwt = request.getHeader("token");
 
-        if(jwt == null)
+        if (jwt == null)
             throw new UnauthorisedException("ERROR: Authorization is required.");
 
 
         var auth = _securityService.checkAuthentication(jwt);
 
-        if(!auth)
+        if (!auth)
             throw new UnauthorisedException("ERROR: Authorization is required.");
 
         return true;

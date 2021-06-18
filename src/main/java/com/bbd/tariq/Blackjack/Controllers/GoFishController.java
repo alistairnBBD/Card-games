@@ -41,7 +41,7 @@ public class GoFishController extends BaseController {
     }
 
     @PostMapping(value = "/ask")
-    public GoFishGameModel Ask(@RequestParam String gameId, int playerId, int targetId, char card) {
+    public GoFishGameModel Ask(@RequestParam String gameId, int playerId, int targetId, String card) {
 
         return _gofishService.ask(gameId,playerId,targetId,card.charAt(0));
     }

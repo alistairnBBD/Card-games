@@ -1,11 +1,8 @@
 package com.bbd.tariq.Blackjack.Controllers;
 
-import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
-import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Interfaces.ISecurityService;
 import com.bbd.tariq.Blackjack.Models.Auth.User;
-import com.bbd.tariq.Blackjack.Repos.AuthRepo;
-import org.modelmapper.ModelMapper;
+import com.bbd.tariq.Blackjack.Repos.UserRepo;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/auth")
@@ -13,18 +10,22 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final ISecurityService _securityService;
-    private final AuthRepo _authRepo;
+    private final UserRepo _authRepo;
 
     public AuthController(ISecurityService securityService) {
 
         _securityService = securityService;
-        _authRepo = new AuthRepo();
+        _authRepo = new UserRepo();
     }
 
     @PostMapping("/register")
     public String register(@RequestParam String username, String password) {
         String hashedPassword = _securityService.hashPassword(password);
-        _authRepo.Insert(new User(username,hashedPassword));
+        var res = _authRepo.Insert(new User(username,hashedPassword));
+
+        if(!res.equals("success")) {
+            return res;
+        }
 
         return "User successfully registered, please log in!";
     }

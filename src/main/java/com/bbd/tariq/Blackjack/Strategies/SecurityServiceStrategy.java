@@ -11,13 +11,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 
 public class SecurityServiceStrategy implements ISecurityService {
 
-    private ArrayList<String> activeJWTS;
+    private HashMap<String,String> activeJWTS;
 
     public SecurityServiceStrategy() {
-        activeJWTS = new ArrayList<>();
+        activeJWTS = new HashMap<>();
     }
 
     @Override
@@ -47,7 +48,14 @@ public class SecurityServiceStrategy implements ISecurityService {
                    .setExpiration(new Date(expirationMilliseconds));
 
            var jwt =  builder.compact();
-           activeJWTS.add(jwt);
+
+           if(!activeJWTS.containsKey(username)){
+               activeJWTS.put(username,jwt);
+           }
+           else {
+               activeJWTS.replace(username,jwt);
+           }
+
            return jwt;
 
 
@@ -61,12 +69,13 @@ public class SecurityServiceStrategy implements ISecurityService {
                 .setSigningKey(Base64.getEncoder().encodeToString(new String("test secret key").getBytes()))
                 .parseClaimsJws(jwt).getBody();
 
-        if(!activeJWTS.contains(jwt))
+        if(!activeJWTS.containsKey(claims.getId())){
             return false;
+        }
 
         else if(claims.getExpiration().before(new Date(System.currentTimeMillis())))
         {
-            activeJWTS.remove(jwt);
+            activeJWTS.remove(claims.getId());
             return false;
         }
 
