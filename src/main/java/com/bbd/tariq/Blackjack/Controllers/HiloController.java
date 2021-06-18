@@ -8,12 +8,18 @@ import com.bbd.tariq.Blackjack.Interfaces.IHiloService;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Models.HiloGame.HiloGameModel;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/hilo")
+@ApiImplicitParams({
+        @ApiImplicitParam(name = "token", required = true, value = "token",
+                paramType = "header", dataType = "String")
+})
 @Component
 public class HiloController extends BaseController {
 

@@ -3,9 +3,15 @@ package com.bbd.tariq.Blackjack.Controllers;
 import com.bbd.tariq.Blackjack.Exceptions.ContentNotFoundException;
 import com.bbd.tariq.Blackjack.Models.Auth.User;
 import com.bbd.tariq.Blackjack.Repos.UserRepo;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@ApiImplicitParams({
+        @ApiImplicitParam(name = "token", required = true, value = "token",
+                paramType = "header", dataType = "String")
+})
 @RequestMapping("/users")
 public class UserController {
 

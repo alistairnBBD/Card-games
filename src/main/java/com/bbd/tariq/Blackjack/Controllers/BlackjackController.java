@@ -10,12 +10,18 @@ import com.bbd.tariq.Blackjack.Models.BlackjackGame.BlackjackGameModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.DrawCardResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.DrawCardFromPileResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/blackjack")
+@ApiImplicitParams({
+        @ApiImplicitParam(name = "token", required = true, value = "token",
+                paramType = "header", dataType = "String")
+})
 @Component
 public class BlackjackController extends BaseController {
 

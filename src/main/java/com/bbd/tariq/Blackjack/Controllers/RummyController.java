@@ -20,6 +20,8 @@ import com.bbd.tariq.Blackjack.Strategies.RummyServiceStrategy;
 import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 import com.bbd.tariq.Blackjack.Models.GameModel;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.apache.tomcat.util.json.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/rummy")
+@ApiImplicitParams({
+        @ApiImplicitParam(name = "token", required = true, value = "token",
+                paramType = "header", dataType = "String")
+})
 @Component
 public class RummyController extends BaseController {
     private IRummyService _rummyService;

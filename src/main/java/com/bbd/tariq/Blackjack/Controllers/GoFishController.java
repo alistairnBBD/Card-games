@@ -10,12 +10,18 @@ import com.bbd.tariq.Blackjack.Models.GoFishGame.GoFishGameModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.DrawCardResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.DrawCardFromPileResponseModel;
 import com.bbd.tariq.Blackjack.Models.CardsApiModels.Piles.PilesBaseResponseModel;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/gofish")
+@ApiImplicitParams({
+        @ApiImplicitParam(name = "token", required = true, value = "token",
+                paramType = "header", dataType = "String")
+})
 @Component
 public class GoFishController extends BaseController {
 
