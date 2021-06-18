@@ -6,13 +6,12 @@ import com.bbd.tariq.Blackjack.Exceptions.BadRequestException;
 import com.bbd.tariq.Blackjack.Exceptions.ContentNotFoundException;
 import com.bbd.tariq.Blackjack.Interfaces.IGoFishService;
 import com.bbd.tariq.Blackjack.Interfaces.ICardsApi;
+import com.bbd.tariq.Blackjack.Models.CardsApiModels.CardModel;
 import com.bbd.tariq.Blackjack.Interfaces.IRepoFactory;
 import com.bbd.tariq.Blackjack.Models.GoFishGame.GoFishGameModel;
 import com.bbd.tariq.Blackjack.Models.GoFishGame.GoFishPlayer;
-import com.bbd.tariq.Blackjack.Models.PlayerModel;
 import com.bbd.tariq.Blackjack.Repos.Repo;
 
-import java.util.HashMap;
 import java.util.ArrayList;
 
 public class GoFishServiceStrategy implements IGoFishService {
@@ -71,6 +70,9 @@ public class GoFishServiceStrategy implements IGoFishService {
         var player = gofishGameModel.players.stream().filter(p ->p.playerId == playerId).findFirst().orElse(null);
         var target = gofishGameModel.players.stream().filter(p ->p.playerId == targetId).findFirst().orElse(null);
 
+        if (target == (null)) {
+            throw new Error("Invalid target player");
+        }
         preliminaryChecks(gofishGameModel,player,playerId);
 
         if (player.cards.isEmpty()) {
@@ -80,8 +82,8 @@ public class GoFishServiceStrategy implements IGoFishService {
         }
         var targetCards = target.cards.stream().filter(c -> c.code.charAt(0) == card).findAny().orElse(null);
         if (targetCards != null) {
-            //take cards
-            //check set
+            discardSets(target, card);
+            checkSets(player, card);
             return gofishGameModel;
         }
         var drawnCard = _cardsApi.drawCards(gofishGameModel.deckId,1).cards.get(0);
@@ -100,7 +102,7 @@ public class GoFishServiceStrategy implements IGoFishService {
         }
 
     }
-    //TODO
+
     private int determineOutcome(ArrayList<GoFishPlayer> players) {
         int winner = 0;
         int highscore = 0;
@@ -112,5 +114,25 @@ public class GoFishServiceStrategy implements IGoFishService {
             }
         }
         return winner;
+    }
+
+    private void discardSets(GoFishPlayer player, char cardValue) {
+        for(int i = 0; i < player.cards.size(); i++) {
+            if (player.cards.get(i).code.charAt(0) == cardValue) {
+                player.cards.remove(i);
+            }
+        }
+    }
+
+    private void checkSets(GoFishPlayer player, char cardValue) {
+        int set = 0;
+        for(CardModel card : player.cards) {
+            if (card.code.charAt(0) == cardValue) {
+                set++;
+            }
+        }
+        if (set == 4) {
+            discardSets(player, cardValue);
+        }
     }
 }
