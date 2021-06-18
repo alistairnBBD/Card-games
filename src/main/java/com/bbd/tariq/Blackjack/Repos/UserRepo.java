@@ -65,13 +65,11 @@ public class UserRepo {
     }
 
     public static Connection getConnection() {
-//        String dbUrl = System.getenv("POSTGRES_URL");
-//        String username = System.getenv("POSTGRES_UNAME");
-//        String pass = System.getenv("POSTGRES_PWD");
+        String dbUrl = System.getenv("POSTGRES_URL");
+        String username = System.getenv("POSTGRES_UNAME");
+        String pass = System.getenv("POSTGRES_PWD");
 
-        String dbUrl = ("jdbc:postgresql://ec2-54-225-228-142.compute-1.amazonaws.com:5432/ddfr5ouosdofbs");
-        String username = ("jsyzbseolvtiic");
-        String pass = ("bddf4efc065dae2484562b869685e7890eb9291aa6692e3cc4754e47470f6e7c");
+
         try {
             return DriverManager.getConnection(dbUrl,username,pass);
         } catch (SQLException throwables) {
